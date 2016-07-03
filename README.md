@@ -66,16 +66,19 @@ require "metaclass/object"
 class A
   metaclass!
   class_getter inheritance, Hash(Symbol, String) do
-    {key: "value"}
+    {:a => "a"}
   end
 end
 
 class B < A
   metaclass!
   inherit_class_variable inheritance do |parent|
-    parent.merge(key2: "value2")
+    parent.merge(:b => "b")
   end
 end
+
+A.inheritance # => {:a => "a"}
+B.inheritance # => {:a => "a", :b => "b"}
 ```
 
 ## Usage

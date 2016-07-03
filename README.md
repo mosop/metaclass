@@ -72,7 +72,7 @@ end
 
 class B < A
   metaclass!
-  inherit_class_variable inheritance do |parent|
+  inherited_class_getter inheritance do |parent|
     parent.merge(:b => "b")
   end
 end

@@ -2,6 +2,8 @@
 
 A Crystal library for manipulating class-level definitions.
 
+[![Build Status](https://travis-ci.org/mosop/metaclass.svg?branch=master)](https://travis-ci.org/mosop/metaclass)
+
 ## Installation
 
 Add this to your application's `shard.yml`:
@@ -44,12 +46,12 @@ require "metaclass/object"
 
 class Constant
   metaclass!
-  class_getter uuid : Int32 { SecureRandom.uuid }
+  class_getter uuid : String { SecureRandom.uuid }
 end
 
 class Inconstant
   metaclass!
-  class_getter uuid : Int32, memo: false { SecureRandom.uuid }
+  class_getter uuid : String, memo: false { SecureRandom.uuid }
 end
 
 Constant.uuid == Constant.uuid # => true

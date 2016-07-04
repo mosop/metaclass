@@ -50,6 +50,7 @@ module Metaclass::ClassMacros
       end %}
     {%
       pascal = name.id.split("_").map{|i| i.capitalize}.join("")
+      value = nil if %w(NilLiteral Nop).includes?(value.class_name)
     %}
     {%
       if !type && (predicate)
@@ -91,16 +92,14 @@ module Metaclass::ClassMacros
         end
       end
       {% if type %}
-        {% if value.class_name != "Nop" %}
+        {% if value %}
           @@{{variable_name.id}} : {{type.id}} = {{value}}
         {% else %}
           @@{{variable_name.id}} : {{type.id}} | Nil
         {% end %}
       {% elsif inherited %}
-        {% if value.class_name != "Nop" %}
-          @@{{variable_name.id}} : Metaclass::{{variable_type.id}} = {{value}}
-        {% else %}
-          @@{{variable_name.id}} : Metaclass::{{variable_type.id}} | Nil
+        {% if value %}
+          @@{{variable_name.id}} = {{value}}
         {% end %}
       {% else %}
         @@{{variable_name.id}} = {{value}}

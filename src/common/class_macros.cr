@@ -92,13 +92,13 @@ module Metaclass::ClassMacros
         end
       end
       {% if type %}
-        {% if value %}
+        {% if value.class_name != "NilLiteral" %}
           @@{{variable_name.id}} : {{type.id}} = {{value}}
         {% else %}
           @@{{variable_name.id}} : {{type.id}} | Nil
         {% end %}
       {% elsif inherited %}
-        {% if value %}
+        {% if value.class_name != "NilLiteral" %}
           @@{{variable_name.id}} = {{value}}
         {% end %}
       {% else %}

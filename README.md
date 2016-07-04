@@ -39,7 +39,30 @@ Misc.movie = "La Strada"
 Misc.movie # => "La Strada"
 ```
 
-### Initializer
+### Predicate
+
+```crystal
+require "metaclass/object"
+
+class Misc
+  metaclass!
+  class_getter? exists = true
+  class_setter? promise_broken = false
+  class_property? happy = false, neg: unhappy
+end
+
+Misc.exists? # => true
+Misc.exists! # => raises error (getter only)
+Misc.promise_broken!
+Misc.promise_broken? # raises error (setter only)
+Misc.happy? # => false
+Misc.happy!
+Misc.happy? # => true
+Misc.unhappy!
+Misc.happy? # => false
+```
+
+### Computed Property
 
 ```crystal
 require "metaclass/object"

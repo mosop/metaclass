@@ -1,7 +1,7 @@
 require "../spec_helper"
 require "secure_random"
 
-module MetaclassInitializerFeature
+module MetaclassComputedPropertyFeature
   class Constant
     metaclass!
     class_getter uuid : String { SecureRandom.uuid }

@@ -1,4 +1,34 @@
 module Metaclass::ClassMacros
+  macro __define_metaclass_class
+    {% unless @type.constants.includes?("Metaclass".id) %}
+      {%
+        is_root = !@type.superclass || !@type.superclass.constants.includes?("Metaclass".id)
+      %}
+      {% if is_root %}
+        {%
+          base = ::Metaclass::Base
+          supertype = Nil
+        %}
+      {% else %}
+        {%
+          base = "#{@type.superclass.id}::Metaclass"
+          supertype = @type.superclass
+        %}
+      {% end %}
+      class Metaclass < ::{{base.id}}
+        alias Supertype = ::{{@type.superclass.id}}
+        alias Type = ::{{@type.id}}
+        alias Supermetaclass = ::{{base.id}}
+
+        IS_ROOT = {{is_root}}
+
+        def self.root?
+          {{is_root}}
+        end
+      end
+    {% end %}
+  end
+
   macro __define_class_attribute(decl, inherited = nil, predicate = nil)
     {%
       inherited = false if inherited.class_name == "NilLiteral"
@@ -44,6 +74,7 @@ module Metaclass::ClassMacros
         "#{name.id}"
       end %}
     {% unless Metaclass.has_constant?(defined_status) %}
+      __define_metaclass_class
       class Metaclass
         {{defined_status.id}} = true
 

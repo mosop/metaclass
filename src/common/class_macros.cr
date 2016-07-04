@@ -163,7 +163,7 @@ module Metaclass::ClassMacros
         method_name = name
         variable_name = name
       end %}
-    __define_class_getter_method {{variable_type}}, {{method_name}}, {{variable_name}}, memo: {{memo}}, block_arg: {{block_arg}} {{block}}
+    __define_class_getter_method({{variable_type}}, {{method_name}}, {{variable_name}}, memo: {{memo}}, block_arg: {{block_arg}}) {{block}}
   end
 
   macro class_getter(decl, memo = nil, inherited = nil, block_arg = nil, predicate = nil, &block)
@@ -171,10 +171,10 @@ module Metaclass::ClassMacros
       memo = true if memo.class_name == "NilLiteral"
     %}
     __define_class_attribute {{decl}}, inherited: {{inherited}}, predicate: {{predicate}}
-    __define_class_getter {{decl}}, memo: {{memo}}, block_arg: {{block_arg}}, predicate: {{predicate}} {{block}}
+    __define_class_getter({{decl}}, memo: {{memo}}, block_arg: {{block_arg}}, predicate: {{predicate}}) {{block}}
   end
 
-  macro __define_class_setter_method(method_name, variable_name, memo = nil, block_arg = nil, &block)
+  macro __define_class_setter_method(method_name, variable_name, block_arg = nil, &block)
     {% if block %}
       def self.{{method_name.id}}
         {% if block_arg %}
@@ -190,7 +190,7 @@ module Metaclass::ClassMacros
     {% end %}
   end
 
-  macro __define_class_setter(decl, predicate = nil, block_arg = nil, &block)
+  macro __define_class_setter(decl, predicate = nil, method_name = nil, block_arg = nil, &block)
     {%
       if decl.class_name == "TypeDeclaration"
         name = decl.var
@@ -203,18 +203,18 @@ module Metaclass::ClassMacros
       end %}
     {%
       if predicate
-        method_name = "#{name.id}!"
+        method_name = "#{(method_name || name).id}!"
         variable_name = "#{name.id}__predicate"
       else
         method_name = name
         variable_name = name
       end %}
-    __define_class_setter_method {{method_name}}, {{variable_name}}, block_arg: {{block_arg}} {{block}}
+    __define_class_setter_method({{method_name}}, {{variable_name}}, block_arg: {{block_arg}}) {{block}}
   end
 
-  macro class_setter(decl, predicate = nil, block_arg = nil, &block)
+  macro class_setter(decl, predicate = nil, method_name = nil, block_arg = nil, &block)
     __define_class_attribute {{decl}}, predicate: {{predicate}}
-    __define_class_setter {{decl}}, predicate: {{predicate}}, block_arg: {{block_arg}} {{block}}
+    __define_class_setter({{decl}}, predicate: {{predicate}}, method_name: {{method_name}}, block_arg: {{block_arg}}) {{block}}
   end
 
   macro inherited_class_getter(decl, &block)
@@ -228,7 +228,7 @@ module Metaclass::ClassMacros
       elsif decl.class_name == "Var"
         name = decl
       end %}
-    class_getter {{decl}}, inherited: true, block_arg: Metaclass::Supertype.{{name.id}} {{block}}
+    class_getter({{decl}}, inherited: true, block_arg: Metaclass::Supertype.{{name.id}}) {{block}}
   end
 
   macro class_property?(decl, memo = nil, neg = nil, &block)
@@ -240,13 +240,10 @@ module Metaclass::ClassMacros
     class_getter {{decl}}, memo: {{memo}}, predicate: true {{block}}
   end
 
-  macro class_setter?(decl, memo = nil, neg = nil)
-    {%
-      memo = false if memo.class_name == "NilLiteral"
-    %}
-    class_setter {{decl}}, predicate: true { true }
+  macro class_setter?(decl, neg = nil)
+    class_setter({{decl}}, predicate: true) { true }
     {% if neg %}
-      class_setter {{neg}}, predicate: true { false }
+      class_setter({{decl}}, predicate: true, method_name: {{neg}}) { false }
     {% end %}
   end
 end

@@ -126,6 +126,11 @@ end
 
 And see [Features](#features)
 
+## Release Notes
+
+* v0.1.1
+  * Predicate
+
 ## Contributing
 
 1. Fork it ( https://github.com/mosop/metaclass/fork )

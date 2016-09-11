@@ -117,7 +117,7 @@ module Metaclass::ClassMacros
       {% if block %}
         {% if memo %}
           if Metaclass.there_is__{{variable_name.id}}?
-            @@{{variable_name.id}} as Metaclass::{{typename.id}}
+            @@{{variable_name.id}}.as(Metaclass::{{typename.id}})
           else
             Metaclass.there_is__{{variable_name.id}}!
             {% if block_arg %}
